@@ -1,0 +1,137 @@
+title: CIS Fedora Linux - Level 1 Guidance
+type: Standard
+metadata:
+  id: cis-fedora-l1-guidance
+  type: GuidanceCatalog
+  gemara-version: "0.24.0"
+  description: Guidance catalog for the CIS Fedora Linux Level 1 Benchmark. Provides rationale and context for each control family covering filesystem hardening, service minimization, network security, firewall configuration, access controls, logging, and system maintenance. Shared across Server and Workstation profiles.
+  author:
+    id: complytime
+    name: ComplyTime
+    type: Software
+groups:
+  - id: initial-setup
+    title: Initial Setup
+    description: Filesystem, software updates, SELinux, boot, kernel, crypto, and banner configuration
+  - id: services
+    title: Services
+    description: Network services, client packages, and time synchronization configuration
+  - id: network
+    title: Network Configuration
+    description: Kernel modules, IPv4, and IPv6 network stack configuration
+  - id: firewall
+    title: Host-Based Firewall
+    description: Firewall package installation and traffic filtering configuration
+  - id: access-auth
+    title: Access, Authentication, and Authorization
+    description: SSH, sudo, PAM, password, user account, and shell configuration
+  - id: logging
+    title: Logging and Auditing
+    description: System logging, journald, and file integrity monitoring configuration
+  - id: maintenance
+    title: System Maintenance
+    description: File permissions, user/group integrity, and home directory configuration
+  - id: operations
+    title: Operations
+    description: Operational tasks required for configuration application
+guidelines:
+  - id: guidance-initial-setup
+    title: CIS Fedora Server L1 - Initial Setup
+    objective: Ensure foundational system hardening is applied before the system enters production
+    group: initial-setup
+    statements:
+      - id: guidance-initial-setup-s1
+        text: Organizations SHOULD disable unused filesystem kernel modules (cramfs, freevxfs, hfs, hfsplus, jffs2, firewire-core, usb-storage) to reduce the kernel attack surface. CIS Benchmark sections 1.1.1.x.
+      - id: guidance-initial-setup-s2
+        text: Organizations MUST configure separate partitions for /tmp, /dev/shm, /home, /var, /var/tmp, /var/log, and /var/log/audit with appropriate mount options (nodev, nosuid, noexec) to limit the impact of filesystem-based attacks. CIS Benchmark sections 1.2.x.
+      - id: guidance-initial-setup-s3
+        text: Organizations MUST ensure package management (GPG check) is enabled to verify the integrity of installed software. CIS Benchmark section 2.1.2.
+      - id: guidance-initial-setup-s4
+        text: Organizations MUST install and configure SELinux with an appropriate policy type and ensure it is not disabled in the bootloader configuration. The setroubleshoot and mcstrans packages should be removed. CIS Benchmark sections 3.1.x.
+      - id: guidance-initial-setup-s5
+        text: Organizations SHOULD set a bootloader password to prevent unauthorized kernel parameter modifications. CIS Benchmark section 4.1.
+      - id: guidance-initial-setup-s6
+        text: Organizations SHOULD harden kernel parameters including core dump restrictions, protected hard/symlinks, ASLR, dmesg restriction, kptr restriction, and ptrace scope to limit information leakage and exploitation. CIS Benchmark sections 5.x.
+      - id: guidance-initial-setup-s7
+        text: Organizations MUST configure system-wide cryptographic policies to disable weak algorithms (SHA1, CBC for SSH) and ensure strong MACs. CIS Benchmark sections 6.x.
+      - id: guidance-initial-setup-s8
+        text: Organizations MUST configure login banners (/etc/motd, /etc/issue, /etc/issue.net) with appropriate content and file permissions. GDM login banner, screen lock, automount, and autorun settings should be configured where applicable. CIS Benchmark sections 7.x, 8.x.
+  - id: guidance-services
+    title: CIS Fedora Server L1 - Services
+    objective: Minimize the system attack surface by disabling or removing unnecessary network services and client packages
+    group: services
+    statements:
+      - id: guidance-services-s1
+        text: Organizations MUST disable or remove unnecessary network services including autofs, avahi-daemon, bluetooth, CUPS, DHCP (kea), DNS (bind), dnsmasq, FTP (vsftpd), IMAP/POP (cyrus-imapd, dovecot), NFS, rpcbind, rsync, Samba, SNMP, telnet-server, TFTP server, Squid proxy, and web servers (httpd, nginx). CIS Benchmark sections 2.1.x.
+      - id: guidance-services-s2
+        text: Organizations MUST remove unnecessary client packages including FTP, telnet, and TFTP clients. CIS Benchmark sections 2.2.x.
+      - id: guidance-services-s3
+        text: Organizations MUST configure time synchronization using chrony with a remote server and ensure it runs as the chrony user (not root). CIS Benchmark sections 2.3.x.
+      - id: guidance-services-s4
+        text: Organizations MUST install and enable the cron daemon, configure proper file permissions on cron directories (/etc/crontab, cron.hourly, cron.daily, cron.weekly, cron.monthly, cron.d), and restrict access to cron and at using allow/deny files. CIS Benchmark sections 2.4.x.
+      - id: guidance-services-s5
+        text: Organizations MUST configure mail transfer agents for local-only mode and ensure postfix does not listen on external interfaces. CIS Benchmark section 2.1.23.
+  - id: guidance-network
+    title: CIS Fedora Server L1 - Network Configuration
+    objective: Harden network stack configuration to prevent common network-based attacks
+    group: network
+    statements:
+      - id: guidance-network-s1
+        text: Organizations SHOULD disable unnecessary kernel network modules (ATM, CAN, DCCP, TIPC, RDS) and wireless interfaces to reduce the network attack surface. CIS Benchmark sections 3.1.x, 3.2.x.
+      - id: guidance-network-s2
+        text: Organizations MUST configure IPv4 sysctl parameters to disable IP forwarding, reject source-routed packets, ignore ICMP redirects, enable reverse path filtering, log martian packets, and enable TCP SYN cookies. CIS Benchmark sections 3.3.1.x.
+      - id: guidance-network-s3
+        text: Organizations MUST configure IPv6 sysctl parameters to disable forwarding, reject redirects, source-routed packets, and router advertisements. CIS Benchmark sections 3.3.2.x.
+  - id: guidance-firewall
+    title: CIS Fedora Server L1 - Host-Based Firewall
+    objective: Ensure a properly configured host-based firewall limits network exposure
+    group: firewall
+    statements:
+      - id: guidance-firewall-s1
+        text: Organizations MUST install nftables and firewalld, enable the firewalld service, disable the nftables service (when using firewalld as the primary firewall), and configure loopback traffic filtering. CIS Benchmark sections 4.x.
+  - id: guidance-access-auth
+    title: CIS Fedora Server L1 - Access, Authentication, and Authorization
+    objective: Enforce strong access controls to prevent unauthorized access and privilege escalation
+    group: access-auth
+    statements:
+      - id: guidance-access-auth-s1
+        text: Organizations MUST harden SSH server configuration including proper file permissions on sshd_config and host key files, disabling root login, empty passwords, host-based authentication, rhosts, user environment, and configuring login grace time, log level, max auth tries, max startups, max sessions, idle timeout, keepalive, PAM usage, access restrictions, and warning banner. Strong key exchange algorithms, MACs, and ciphers should be configured. CIS Benchmark sections 5.1.x.
+      - id: guidance-access-auth-s2
+        text: Organizations MUST install sudo, configure it to use a PTY and custom log file, ensure re-authentication is required, configure timestamp timeout, and restrict access to the su command using pam_wheel. CIS Benchmark sections 5.2.x.
+      - id: guidance-access-auth-s3
+        text: Organizations MUST install libpwquality, enable pam_faillock and pam_pwquality modules, configure account lockout (deny, unlock_time), password quality (difok, minlen, minclass, maxrepeat, dictcheck, enforce_root), password history, and ensure no empty passwords are allowed. Strong password hashing algorithms should be used. CIS Benchmark sections 5.3.x.
+      - id: guidance-access-auth-s4
+        text: Organizations MUST configure password expiration, warning days, inactive password lock, strong hashing in login.defs and libuser.conf, ensure root is the only UID 0 and GID 0 account, verify root path integrity, and ensure system accounts do not have valid login shells. CIS Benchmark sections 5.4.x.
+      - id: guidance-access-auth-s5
+        text: Organizations MUST configure default user shell timeout (TMOUT) and umask settings in /etc/bashrc, /etc/login.defs, and /etc/profile. CIS Benchmark sections 5.4.3.x.
+  - id: guidance-logging
+    title: CIS Fedora Server L1 - Logging and Auditing
+    objective: Ensure comprehensive logging for incident detection and forensic analysis
+    group: logging
+    statements:
+      - id: guidance-logging-s1
+        text: Organizations MUST install AIDE, build its initial database, configure periodic integrity checking via cron, and use cryptographic mechanisms to protect audit tool integrity. CIS Benchmark sections 6.1.x.
+      - id: guidance-logging-s2
+        text: Organizations MUST enable the systemd-journald service, install systemd-journal-remote (and disable its socket for receive), configure journald to compress logs and use persistent storage. CIS Benchmark sections 6.2.x.
+      - id: guidance-logging-s3
+        text: Organizations MUST configure proper ownership and permissions on rsyslog log files to prevent unauthorized access. CIS Benchmark section 6.2.6.1.
+  - id: guidance-maintenance
+    title: CIS Fedora Server L1 - System Maintenance
+    objective: Maintain proper file permissions and account hygiene to prevent privilege escalation
+    group: maintenance
+    statements:
+      - id: guidance-maintenance-s1
+        text: Organizations MUST configure proper ownership and permissions on critical system files including /etc/passwd, /etc/passwd-, /etc/group, /etc/group-, /etc/shadow, /etc/shadow-, /etc/gshadow, /etc/gshadow-, /etc/shells, and GRUB configuration files. CIS Benchmark sections 7.1.x.
+      - id: guidance-maintenance-s2
+        text: Organizations MUST ensure world-writable files have sticky bits set, no unauthorized world-writable files exist, no unowned or ungrouped files exist, and user configuration files have appropriate settings. CIS Benchmark sections 7.1.11.
+      - id: guidance-maintenance-s3
+        text: Organizations MUST ensure all accounts use shadowed passwords, no empty shadow password fields exist, all groups in /etc/passwd exist in /etc/group, no duplicate UIDs/GIDs/usernames/groupnames exist, and home directories are properly configured with correct ownership and permissions. CIS Benchmark sections 7.2.x.
+      - id: guidance-maintenance-s4
+        text: Organizations MUST ensure user dot files have proper ownership and permissions, and no .forward or .netrc files exist. CIS Benchmark section 7.2.9.
+  - id: guidance-operations
+    title: CIS Fedora Server L1 - Operations
+    objective: Ensure operational tasks are completed after configuration changes
+    group: operations
+    statements:
+      - id: guidance-operations-s1
+        text: The dconf database MUST be reloaded after any GDM or GNOME configuration changes to ensure settings take effect.

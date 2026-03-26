@@ -1,0 +1,3 @@
+layers:
+  - governance/catalogs/ampel-branch-protection-catalog.yaml
+  - governance/policies/ampel-branch-protection-policy.yaml

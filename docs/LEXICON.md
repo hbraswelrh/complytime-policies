@@ -15,6 +15,8 @@ Bundles
 OCI Registry
 OSPS Baseline
 Mapping Document
+Image
+Pulling from a registry
 
 ## Policy
 

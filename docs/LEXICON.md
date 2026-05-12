@@ -2,31 +2,70 @@
 
 Policy
 Open Policy Agent
-ComplyTime
-Gemara
-Gemara Enforcement
-Gemara Evaluation
-Gemara Catalog 
-Gemara Control Catalog
-Gemara Risk Catalog
-Gemara Guidance Catalog
-Gemara Threat Catalog
-Bundles
-OCI Registry
-OSPS Baseline
-Mapping Document
-Image
-Pulling from a registry
+## ComplyTime
+
+### complyctl
+
+Project that pulls Gemara policies from an OCI registry and executes scans using providers. Currently, the ampel provider is used for evaluation of branch protection configuration. Th
+
+#### What does this have to do with Gemara? 
+
+## Gemara Project
+**Gemara:** the GRC Engineering Model for Automated Risk Assessment. Gemara is defined by The Model which is built on a 7-layer architecture that separates compliance activites into layers. The separation of activities ensures that there are not requirements which bleed between activities, but rather are a collaboration between cross-functional roles to accomplish desired outcomes. Describing and categorizing compliance activities to ensure interoperability between the layers.   
+**Gemara Enforcement:**
+**Gemara Evaluation:** the evaluation stage would be during a privateer execution or through evaluating the assessment plan indicated in your Policy. The EvaluationLog aggregates the AssessmentLog artifacts and their result to create the full eva
+**Gemara Catalog:** general term for one or more of the following terms VectorCatalog, PrincipleCatalog, GuidanceCatalog, ControlCatalog, ThreatCatalog, CapabilitiesCatalog, RiskCatalog.  
+
+### Layer 1
+**Gemara Guidance Catalog:** high level guidance that would come from a regulator, standards body, or unique organization-specific use-cases of best practices.
+
+### Layer 2 
+
+When we talk about layer 2 catalogs we are primarily defining what your project can do, what could go wrong, and how to make sure you _control_ the outcome through mitigation and security hygiene techniques. 
+**Gemara Threat Catalog:** potential things that could go wrong based on the project capabilities. Basically, if your project has passwords, and you don't have an adequate mechanism for storing those passwords there is a potential threat of storing passwords in plain text, as strings which could be committed to a repository and used by an attacker exploiting your work project. Therefore, the capability is having a project with passwords and the threat is exploitation of passwords or malintent for usage of the passwords.
+**Gemara Control Catalog:** the security controls that include testable requirements. If you can't write a check for the control it likely is not a Layer 2 ControlCatalog control. However, by breaking down high-level GuidanceCatalog guidance, security controls can be extracted to support compliance with the Best Practices, Frameworks, and Guidance.
+
+### Layer 3 
+
+**Gemara Risk Catalog:** defined by the activities of cataloging risks and developing a register with organizational Risk Appetite, Risk Acceptance, and controls chosen to Mitigate or Accept. The RiskCatalog risks that are identified for mitigation of a risk can pull in associated controls that satisfy mitigation of the threats that can be imposed on the system.
+**Gemara Policy:** scoping the assessment and implementation to a specific region, technology platform, and documenting the methods of adherence. 
+
+**Mapping Document:** Rich mappings between a source-reference (mapping from) and target-reference (mapping to) that can be extended by different groups.
+
+## OCI (Open Container Image)
+
+**When we say "pulling the bundle" or "oci artifact" this is what we mean:** 
+
+* **Bundles:** information bundling whether it's Gemara catalogs aggregated into a bundle alongside the ampel granular policy intoto attestations or the bundle of OCI artifacts that are pulled during the `xomplyctl get` command.
+* [OCI Registry](https://opencontainers.org/): to pull from a container registry is to essentially extract the bundled content from a manifest that signs the artifact and stores the relevant data alongside the artifact itself. Container Image manifests can point to other manifests via OCI registry or OCI content-layout. Since OCI artifacts are tagged and pinned to digests, the tag (e.g., v1.0.0) will resolve a descriptor that provides additional context on the environment and the artifact. Examples that would be candidates for inclusion in the manifest would be the schemas, artifact types, configuration, date of creation, etc.
+* **Image:** container images are dependencies, runtimes, and the source code that are aggregated as a portable image and can be leveraged across setups. Ideally a container runtime will be spawned in a docker, podman, or any other container orchestration system. The goal is to ensure everything works as expected regardless of the hardware stack.
+* **Manifest:** In terms of OCI artifacts, the manifests have everything needed to use pre-saved content. If the OCI Registry has Policy and Catalog data that would be included in the manifest as a "blob" or in reference to another manifest.
+**Pulling from a registry:** to pull from a container registry is to essentially extract the bundled content from a manifest that signs the artifact and stores the relevant data alongside the artifact itself. Container Image manifests can point to other manifests via OCI registry or OCI content-layout. 
+
+## Projects
+
+* **OSPS Baseline:** the Open Source Project Security Baseline outlines the minimum security requirements for open source projects based on maturity level. Think of it this way, if a project has a few maintainers, but is a Kubernetes dependency, its maturity level would be significantly higher than a project of the same maintainer status which did not have as extensive of a reach across the open source ecosystem. Overall, the project aims to alleviate project maintainers of the need to reinvent the wheel for security needs.
+* **complyctl:** see the dedicated `complyctl` section of the page.
+
 
 ## Policy
 
-Gemara Policy 
+Gemara Policy: a policy can import other policies and catalogs in support of the adherence to a plan. The policy should be time-bound and define the scope, risks, and implementation plan.   
 OPA Rego Policy 
 
 ## Tools
 
 #### What is OPA? 
 
+The 🧠brain. As simple as yes or no. OPA acts as the brain for decision-making. Think about all of the different policies for newly onboarded associates getting access to internal resources. Those policies that interact with software like a simple GitHub organization privilege or ensuring they are not an automatic maintainer is a way to identify these policies. From there, we hacve to determine how these policies are maintained and who makes the decisions. If you onboard 50 new associates and must go through and re-review the same access privileges for each one, there could be a mistake and it would not work out well for the associates because they may be left in a state of inability to move forward with the work expected of them. Think of it like asking whether all of those people need to be added to a GitHub organization at one time. Instead of going through each person one-by-one, OPA would look at each one and choose to allow or deny those privileges. Therefore, there wouldn't be additional context needed or fatigue from someone going through the manual motions. Similarly to GitHub Branch protection - the reason it serves as a good example is because of the portable policy engines that enable the capturing of the outcome. Instead of that manual settings check that could be "fudged" there would instead be an answer from a system whose only job is to answer yes or no based on pre-determined rules.
+
+OPA makes this easier across projects so that there is ease of use and doesn't require redeclaration of the policies at each stage. 
+
+Rego: the high-level declarative language that is how OPA policies are written. Rego is just a set of rules that can be used to assess whether the input request is going to be allowed or denied. Defines what is true or false based on input data. 
+
+Ex: Rules outline that `input.method` must be "GET" and the `input.path` must be "`users`." This is operating on the premise that the default `allow = false`. If the user has input data that is "`input:` `method:` GET, and `path:` users" the condition will be `allow = true`. Partial rules would allow for greater flexibility. Kind of like if a user needs admin access, but their path type is user and not admin the condition will only be accepted if the user type is admin and would not require the GET `input.method`.
+Partial rules are useful for establishing multiple results which could satisfy a condition.
+Policy Decision and Policy Enforcement are separated. 
 OPA stands for Open Policy Agent. It's a policy engine that unifies policy enforcement.
 Used for enforcing policies in microservices, Kubernetes, CI/CD pipelines, API gateways, and more.
 

@@ -1,6 +1,6 @@
 # Frequently Asked Questions
 
-**Question:** If I am using Gemara, do I need to know CUE?
+**Question:** If I am using Gemara, do I need to know [CUE](https://cuelang.org/)?
 **Answer:** Nope. CUE is for expressing the schemas and for validation. All you need to know is YAML.
 
 **Question:** Is ComplyTime a Product?
@@ -12,8 +12,11 @@
 **Question:** What are providers?
 **Answer:** See [complytime-providers](complytime-providers-overview.md) for more details.
 
-**Question:** What is the difference between capital "P" Policy and lowercase "p" policy?
-**Answer:** Capital "P" Policy describes **rules** and what needs to be assessed in **natural language**. Lowercase "p" policy is the **operational logic** to evaluate structured input in **query language**. 
+**Question:** What is a Policy (capital "P")?
+**Answer:** A [Gemara Policy](COMMON-TERMS.md#gemara-policy) describes **rules** and what needs to be assessed in **natural language**. It defines scope, timelines, risk appetite, and which controls apply to an organization.
+
+**Question:** What is a policy (lowercase "p")?
+**Answer:** A policy is the **operational logic** — code written in a query language (e.g., [Rego](COMMON-TERMS.md#rego)) — that a [policy engine](COMMON-TERMS.md#opa-open-policy-agent) evaluates against structured input to produce a pass/fail decision.
 
 **Question:** What is the Gemara-equivalent to cross-walking?
 **Answer:** The Mapping Document Schema is the logical equivalent to cross-walking in the Gemara Model. A regulation like the European Union Cyber Resilience Act can overlap with other frameworks and standards like ISO 27001, etc. The overlap can be expressed in a Gemara MappingDocument to describe the relationships between the two frameworks.
@@ -23,6 +26,15 @@
 
 **Question:** How does OPA work?
 **Answer:** In three steps, OPA uses **Query**, **Data + Policy**, and **Decision**. The **query** would be a question like "Can USER Camille delete this file?" OPA looks at **Policy (rules)** and the **Data (info about Camille and the file)**. Then OPA sends back a **decision** "Yes" or "No" (or even complex responses like "Yes, but only if she's using the VPN").
+
+**Question:** My auditor wants a format that complyctl doesn't support. What do I do?
+**Answer:** complyctl currently supports [four output formats](complyctl-overview.md#for-audit-program-managers-evidence-collection): OSCAL assessment-results (JSON), SARIF, Markdown, and EvaluationLog (YAML). If your auditor requires a different format, you can post-process the OSCAL or EvaluationLog output — both are structured and machine-readable. OSCAL in particular is the NIST standard and has a growing ecosystem of conversion tools.
+
+**Question:** What happens if my target system has changed between scans?
+**Answer:** complyctl scans the target system as it exists at scan time — it evaluates current state, not historical state. If the system has changed (e.g., new services deployed, configurations modified), the scan results will reflect the new state. [Policies are versioned](complyctl-overview.md#for-compliance-managers) with digest pinning, so the same controls are evaluated consistently even as the target changes. Comparing scan results across time shows what drifted. See also: [complyctl overview](complyctl-overview.md#for-audit-program-managers-evidence-collection) and [providers overview](complytime-providers-overview.md#how-it-fits-your-program).
+
+**Question:** Can I integrate my own policy engine?
+**Answer:** Yes. [Providers](complytime-providers-overview.md) are standalone executables that communicate with complyctl over gRPC using the HashiCorp go-plugin protocol. A provider implements three RPCs — `Describe`, `Generate`, and `Scan` — and is discovered by naming convention (`complyctl-provider-*`) in `~/.complytime/providers/`. You can write a provider that wraps any policy engine or scanning tool. See the [complyctl overview](complyctl-overview.md#for-engineers--devops) for details on the plugin interface.
 
 ---
 

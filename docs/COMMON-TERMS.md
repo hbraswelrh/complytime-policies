@@ -12,9 +12,11 @@ A glossary of terms used across the ComplyTime ecosystem. Terms are grouped by t
   - [Guidance vs. Controls](#whats-the-difference-between-a-guidance-catalog-and-a-control-catalog)
   - [Catalogs by Layer](#catalogs)
   - [Policy](#gemara-policy)
+  - [Confidence Level](#confidence-level)
 - [OCI (Open Container Image)](#oci-open-container-image)
 - [Related Projects](#related-projects)
 - [Tools](#tools)
+  - [Beacon](#beacon)
 
 ---
 
@@ -45,7 +47,7 @@ See more in the [complyctl overview](complyctl-overview.md).
 
 **Gemara** — the GRC Engineering Model for Automated Risk Assessment. Gemara is defined by The Model which is built on a 7-layer architecture that separates compliance activities into layers. See the [gemara lexicon](gemara-lexicon.md) for more information.
 
-**Gemara Catalog** — general term for one or more of the following: VectorCatalog, PrincipleCatalog, GuidanceCatalog, ControlCatalog, ThreatCatalog, CapabilitiesCatalog, RiskCatalog.
+**Gemara Catalog** — general term for one or more of the following: [VectorCatalog](gemara-lexicon.md), [PrincipleCatalog](gemara-lexicon.md), [GuidanceCatalog](#layer-1--guidance), [ControlCatalog](#layer-2--threats-and-controls), [ThreatCatalog](#layer-2--threats-and-controls), [CapabilitiesCatalog](gemara-lexicon.md), [RiskCatalog](#layer-3--risk).
 
 ### What's the difference between a Guidance Catalog and a Control Catalog?
 
@@ -85,11 +87,15 @@ When we talk about Layer 2 catalogs, we are referencing what your project can do
 
 A Policy is a clearly-scoped set of rules based on an organization's Risk Appetite. It provides governance rules that, while based on best practices and industry standards, are tailored to an organization. Because policies inevitably introduce some level of Risk Acceptance, they cannot be properly developed without consideration for organization-specific Risk Appetite.
 
-A policy can import other policies and catalogs in support of adherence to a plan. The policy should be time-bound and define the scope, risks, and implementation plan. The Policy imports the Guidance and Controls that can be implemented and tested for satisfaction of compliance requirements, and incorporates the Risk Catalog which catalogs risks, risk appetite, and the strategy for Risk Mitigation vs. Risk Acceptance.
+A policy can import other policies and catalogs in support of adherence to an [assessment](gemara-lexicon.md#assessment) plan — the scheduled activities, scope, and timeline for evaluating whether controls satisfy compliance requirements. The policy should be time-bound and define the scope, risks, and assessment plan. The Policy imports the Guidance and Controls that can be implemented and tested for satisfaction of compliance requirements, and incorporates the [Risk Catalog](gemara-lexicon.md#risk-catalog) which catalogs risks, risk appetite, and the strategy for Risk Mitigation vs. Risk Acceptance.
 
 **When we say "it's a Policy"** — if you need to write a timeline for how often something is reviewed or enforced, it's a Policy. The Control Catalog that supports mitigating risks encompasses the testable requirements used to check whether that Policy is being met via Evaluation.
 
 Assessment Requirements from within a Control Catalog can be modified in the Policy. What is the best approach to assessing the Requirement of the Control that is mitigating X Threat?
+
+### Confidence Level
+
+A field within an individual [AssessmentLog](https://github.com/gemaraproj/gemara/blob/main/evaluationlog.cue) entry that indicates the evaluator's confidence in a specific assessment result. Confidence levels are one of: `Undetermined`, `Low`, `Medium`, or `High`. A single [EvaluationLog](gemara-lexicon.md#evaluation) contains multiple assessment logs — each log records the result of one control check, and confidence level qualifies how reliable that particular result is.
 
 ---
 
@@ -97,7 +103,7 @@ Assessment Requirements from within a Control Catalog can be modified in the Pol
 
 > When we say "pulling the bundle" or "OCI artifact," this is what we mean:
 
-**OCI Registry** — standardized storage and distribution systems for container images and artifacts. They allow for securely storing, sharing, and managing container images and other OCI-compliant artifacts to ensure consistency and security across the development lifecycle. See [opencontainers.org](https://opencontainers.org/).
+**[OCI](https://opencontainers.org/) Registry** — standardized storage and distribution systems for container images and artifacts. They allow for securely storing, sharing, and managing container images and other OCI-compliant artifacts to ensure consistency and security across the development lifecycle.
 
 **Image** — container images are dependencies, runtimes, and source code that are aggregated as a portable image and can be leveraged across setups. Ideally a container runtime will be spawned in a Docker, Podman, or any other container orchestration system. The goal is to ensure everything works as expected regardless of the hardware stack.
 
@@ -117,13 +123,13 @@ Assessment Requirements from within a Control Catalog can be modified in the Pol
 
 [**OpenTelemetry**](https://opentelemetry.io/) — an open source observability framework for cloud-native software. It provides a single set of APIs, libraries, agents, and collector services to capture distributed traces and metrics from your application.
 
-**When we say telemetry** — we mean the automated, remote collection and wireless transmission of data from sensors to a central system for monitoring, analysis, and recording (e.g., the data that is populated on the Grafana dashboards).
+**When we say telemetry** — we mean the automated, remote collection and wireless transmission of data from sensors to a central system for monitoring, analysis, and recording (e.g., reporting dashboards such as [Grafana](https://grafana.com/) for visualization).
 
 ---
 
 ## Tools
 
-### OPA (Open Policy Agent)
+### [OPA (Open Policy Agent)](https://www.openpolicyagent.org/)
 
 OPA stands for Open Policy Agent. It's a policy engine that unifies policy enforcement — used for enforcing policies in microservices, Kubernetes, CI/CD pipelines, API gateways, and more. As simple as **yes** or **no**: OPA acts as the brain for decision-making.
 
@@ -135,9 +141,13 @@ OPA stands for Open Policy Agent. It's a policy engine that unifies policy enfor
 
 The high-level declarative language that OPA policies are written in. Rego is a set of **rules** that can be used to assess whether an input request is going to be allowed or denied. It defines what is true or false based on input data.
 
-### Ampel
+### [Ampel](https://github.com/carabiner-dev/ampel)
 
 Ampel is a policy engine that looks at "Attestations" (digital proof) and checks them against "Policies" (rules). Ampel can pull security policies and evidence directly from OCI registries.
+
+### Beacon
+
+A custom [OpenTelemetry](https://opentelemetry.io/) collector distribution built from [complytime-collector-components](https://github.com/complytime/complytime-collector-components). When export is enabled (`COMPLYTIME_EXPORT_ENABLED=true`), scan results flow automatically from `complyctl` to the Beacon collector for centralized storage and continuous compliance monitoring. See the [complyctl overview](complyctl-overview.md) for usage details.
 
 ---
 

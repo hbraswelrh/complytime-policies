@@ -91,7 +91,44 @@ A policy can import other policies and catalogs in support of adherence to an [a
 
 **When we say "it's a Policy"** — if you need to write a timeline for how often something is reviewed or enforced, it's a Policy. The Control Catalog that supports mitigating risks encompasses the testable requirements used to check whether that Policy is being met via Evaluation.
 
-Assessment Requirements from within a Control Catalog can be modified in the Policy. What is the best approach to assessing the Requirement of the Control that is mitigating X Threat?
+Assessment Requirements from within a Control Catalog can be modified in the Policy using `assessment-requirement-modifications`. This lets an organization tailor how evidence is gathered for a specific control without changing the catalog itself.
+
+<details>
+<summary><strong>Example: modifying an assessment requirement</strong></summary>
+
+Suppose the [Branch Protection Catalog](../governance/catalogs/ampel-branch-protection-catalog.yaml) defines this assessment requirement:
+
+```yaml
+# In the Control Catalog (BP-2.01)
+- id: BP-2.01
+  text: Pull requests must require a minimum number of approvals
+  applicability:
+    - GitHub repositories
+    - GitLab repositories
+```
+
+An organization that only uses GitHub and wants to be more specific about what "minimum" means can modify the requirement in their Policy import:
+
+```yaml
+# In the Policy's catalog import
+imports:
+  catalogs:
+    - reference-id: repo-branch-protection
+      assessment-requirement-modifications:
+        - id: mod-bp-2.01
+          target-id: BP-2.01
+          modification-type: Modify
+          modification-rationale: >-
+            Organization requires at least 2 approvals and
+            only operates on GitHub.
+          text: Pull requests must require at least 2 approvals
+          applicability:
+            - GitHub repositories
+```
+
+The modification types are `Add`, `Modify`, `Remove`, `Replace`, and `Override`. The catalog stays generic; the Policy encodes how the organization chooses to assess each requirement.
+
+</details>
 
 ### Confidence Level
 

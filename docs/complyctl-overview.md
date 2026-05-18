@@ -55,4 +55,4 @@ It fits into CI pipelines -- `complyctl get && complyctl scan --policy-id nist -
 
 ---
 
-**See also:** [Common Terms](COMMON-TERMS.md) | [Gemara Lexicon](gemara-lexicon.md) | [FAQ](FAQ.md) | [Back to Resources](README.md)
+**See also:** [Common Terms](COMMON-TERMS.md) | [Gemara Lexicon](https://github.com/gemaraproj/gemara/blob/main/docs/lexicon.yaml) | [FAQ](FAQ.md) | [Back to Resources](README.md)

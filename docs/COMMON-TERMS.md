@@ -45,9 +45,7 @@ See more in the [complyctl overview](complyctl-overview.md).
 
 ### The Model
 
-**Gemara** — the GRC Engineering Model for Automated Risk Assessment. Gemara is defined by The Model which is built on a 7-layer architecture that separates compliance activities into layers. See the [gemara lexicon](gemara-lexicon.md) for more information.
-
-**Gemara Catalog** — general term for one or more of the following: [VectorCatalog](gemara-lexicon.md), [PrincipleCatalog](gemara-lexicon.md), [GuidanceCatalog](#layer-1--guidance), [ControlCatalog](#layer-2--threats-and-controls), [ThreatCatalog](#layer-2--threats-and-controls), [CapabilitiesCatalog](gemara-lexicon.md), [RiskCatalog](#layer-3--risk).
+**Gemara** — the GRC Engineering Model for Automated Risk Assessment. Gemara is defined by The Model which is built on a 7-layer architecture that separates compliance activities into layers. See the [gemara lexicon](https://github.com/gemaraproj/gemara/blob/main/docs/lexicon.yaml) for more information.
 
 ### What's the difference between a Guidance Catalog and a Control Catalog?
 
@@ -71,11 +69,11 @@ The test: if you can't write testable conditions for it, it's not a control.
 
 #### Layer 2 — Threats and Controls
 
-When we talk about Layer 2 catalogs, we are referencing what your project can do, what could go wrong, and the technology-specific security controls that make sure what _could_ go wrong _doesn't_ go wrong.
+When we talk about Layer 2 catalogs, we are referencing what your project can do ([capabilities](https://github.com/gemaraproj/gemara/blob/2c991327361988b2d6ef0f0ca523bde29b3014ba/docs/lexicon.yaml#L40)), what could go wrong ([threats](https://github.com/gemaraproj/gemara/blob/2c991327361988b2d6ef0f0ca523bde29b3014ba/docs/lexicon.yaml#L129)), and the technology-specific security controls that make sure what _could_ go wrong _doesn't_ go wrong.
 
 **Gemara Threat Catalog** — things that could go wrong based on the project capabilities.
 
-**Gemara Control Catalog** — security controls that include testable requirements. If you can't write a check for the control, it likely belongs in Layer 1. However, by breaking down high-level GuidanceCatalog guidance, security controls can be extracted to support compliance with best practices, frameworks, and guidance.
+**Gemara Control Catalog** — security [controls](https://github.com/gemaraproj/gemara/blob/2c991327361988b2d6ef0f0ca523bde29b3014ba/docs/lexicon.yaml#L62) that include testable requirements. If you can't write a check for the control, it likely belongs in Layer 1. However, by breaking down high-level GuidanceCatalog [guidance](https://github.com/gemaraproj/gemara/blob/2c991327361988b2d6ef0f0ca523bde29b3014ba/docs/lexicon.yaml#L92), security controls can be extracted to support compliance with best practices, frameworks, and guidance.
 
 #### Layer 3 — Risk
 
@@ -85,9 +83,9 @@ When we talk about Layer 2 catalogs, we are referencing what your project can do
 
 ### Gemara Policy
 
-A Policy is a clearly-scoped set of rules based on an organization's Risk Appetite. It provides governance rules that, while based on best practices and industry standards, are tailored to an organization. Because policies inevitably introduce some level of Risk Acceptance, they cannot be properly developed without consideration for organization-specific Risk Appetite.
+A [Policy](https://github.com/gemaraproj/gemara/blob/2c991327361988b2d6ef0f0ca523bde29b3014ba/docs/lexicon.yaml#L153) is a clearly-scoped set of rules based on an organization's Risk Appetite. It provides governance rules that, while based on best practices and industry standards, are tailored to an organization. Because policies inevitably introduce some level of Risk Acceptance, they cannot be properly developed without consideration for organization-specific Risk Appetite.
 
-A policy can import other policies and catalogs in support of adherence to an [assessment](gemara-lexicon.md#assessment) plan — the scheduled activities, scope, and timeline for evaluating whether controls satisfy compliance requirements. The policy should be time-bound and define the scope, risks, and assessment plan. The Policy imports the Guidance and Controls that can be implemented and tested for satisfaction of compliance requirements, and incorporates the [Risk Catalog](gemara-lexicon.md#risk-catalog) which catalogs risks, risk appetite, and the strategy for Risk Mitigation vs. Risk Acceptance.
+A policy can import other policies and catalogs in support of adherence to an [assessment](https://github.com/gemaraproj/gemara/blob/2c991327361988b2d6ef0f0ca523bde29b3014ba/docs/lexicon.yaml#L12) plan — the scheduled activities, scope, and timeline for evaluating whether controls satisfy compliance requirements. The policy should be time-bound and define the scope, risks, and assessment plan. The Policy imports the Guidance and Controls that can be implemented and tested for satisfaction of compliance requirements, and incorporates the [Risk Catalog](https://github.com/gemaraproj/gemara/blob/2c991327361988b2d6ef0f0ca523bde29b3014ba/docs/lexicon.yaml#L185) which catalogs [Risks](https://github.com/gemaraproj/gemara/blob/2c991327361988b2d6ef0f0ca523bde29b3014ba/docs/lexicon.yaml#L177), [Risk Appetite](https://github.com/gemaraproj/gemara/blob/2c991327361988b2d6ef0f0ca523bde29b3014ba/docs/lexicon.yaml#L192), and the strategy for [Risk Mitigation](https://github.com/gemaraproj/gemara/blob/2c991327361988b2d6ef0f0ca523bde29b3014ba/docs/lexicon.yaml#L206) vs. [Risk Acceptance](https://github.com/gemaraproj/gemara/blob/2c991327361988b2d6ef0f0ca523bde29b3014ba/docs/lexicon.yaml#L213).
 
 **When we say "it's a Policy"** — if you need to write a timeline for how often something is reviewed or enforced, it's a Policy. The Control Catalog that supports mitigating risks encompasses the testable requirements used to check whether that Policy is being met via Evaluation.
 
@@ -132,7 +130,7 @@ The modification types are `Add`, `Modify`, `Remove`, `Replace`, and `Override`.
 
 ### Confidence Level
 
-A field within an individual [AssessmentLog](https://github.com/gemaraproj/gemara/blob/main/evaluationlog.cue) entry that indicates the evaluator's confidence in a specific assessment result. Confidence levels are one of: `Undetermined`, `Low`, `Medium`, or `High`. A single [EvaluationLog](gemara-lexicon.md#evaluation) contains multiple assessment logs — each log records the result of one control check, and confidence level qualifies how reliable that particular result is.
+A field within an individual [AssessmentLog](https://github.com/gemaraproj/gemara/blob/main/evaluationlog.cue) entry that indicates the evaluator's confidence in a specific assessment result. Confidence levels are one of: `Undetermined`, `Low`, `Medium`, or `High`. A single [EvaluationLog](https://github.com/gemaraproj/gemara/blob/2c991327361988b2d6ef0f0ca523bde29b3014ba/docs/lexicon.yaml#L74) contains multiple assessment logs — each log records the result of one control check, and confidence level qualifies how reliable that particular result is.
 
 ---
 
@@ -188,4 +186,4 @@ A custom [OpenTelemetry](https://opentelemetry.io/) collector distribution built
 
 ---
 
-**See also:** [Gemara Lexicon](gemara-lexicon.md) | [complyctl Overview](complyctl-overview.md) | [FAQ](FAQ.md) | [Back to Resources](README.md)
+**See also:** [Gemara Lexicon](https://github.com/gemaraproj/gemara/blob/main/docs/lexicon.yaml) | [complyctl Overview](complyctl-overview.md) | [FAQ](FAQ.md) | [Back to Resources](README.md)

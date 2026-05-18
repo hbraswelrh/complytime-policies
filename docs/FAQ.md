@@ -41,4 +41,4 @@
 
 ---
 
-**See also:** [Common Terms](COMMON-TERMS.md) | [Gemara Lexicon](gemara-lexicon.md) | [complyctl Overview](complyctl-overview.md) | [Back to Resources](README.md)
+**See also:** [Common Terms](COMMON-TERMS.md) | [Gemara Lexicon](https://github.com/gemaraproj/gemara/blob/main/docs/lexicon.yaml) | [complyctl Overview](complyctl-overview.md) | [Back to Resources](README.md)

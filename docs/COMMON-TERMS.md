@@ -63,6 +63,80 @@ The test: if you can't write testable conditions for it, it's not a control.
 
 ### Catalogs
 
+The following diagram shows how Gemara layers relate to each other and how they are packaged as OCI artifact layers for consumption by [`complyctl`](https://github.com/complytime/complyctl).
+
+```mermaid
+graph TB
+    subgraph gemara ["Gemara Model Layers"]
+        direction TB
+        L1["Layer 1 -- Guidance<br/><i>GuidanceCatalog</i><br/>High-level requirements from<br/>regulators and standards bodies"]
+        L2T["Layer 2 -- Threats<br/><i>ThreatCatalog</i><br/>What could go wrong<br/>based on capabilities"]
+        L2C["Layer 2 -- Controls<br/><i>ControlCatalog</i><br/>Technology-specific, testable<br/>security requirements"]
+        L3["Layer 3 -- Risk<br/><i>RiskCatalog</i><br/>Risk Appetite, Acceptance,<br/>and Mitigation strategies"]
+        POL["Policy<br/>Imports guidance, controls, and risk<br/>Defines assessment plans and timelines"]
+    end
+
+    L1 -->|"decomposes into"| L2C
+    L1 -->|"informs"| L2T
+    L2T -->|"threats drive"| L2C
+    L2T -->|"risks derived from"| L3
+    L2C -->|"controls mitigate"| L3
+    L3 -->|"imported by"| POL
+    L1 -->|"imported by"| POL
+    L2C -->|"imported by"| POL
+
+    subgraph oci ["OCI Artifact Bundle"]
+        direction TB
+        M["OCI Manifest<br/><i>application/vnd.gemara.bundle.v1</i>"]
+        CFG["Config Blob<br/><i>application/vnd.gemara.manifest.v1+json</i><br/>bundle-version, gemara-version"]
+        OL1["OCI Layer: GuidanceCatalog<br/><i>application/vnd.gemara.guidance.v1+yaml</i>"]
+        OL2["OCI Layer: ControlCatalog<br/><i>application/vnd.gemara.catalog.v1+yaml</i>"]
+        OL3["OCI Layer: Policy<br/><i>application/vnd.gemara.policy.v1+yaml</i>"]
+        M --- CFG
+        M --- OL1
+        M --- OL2
+        M --- OL3
+    end
+
+    L1 -.->|"packaged as"| OL1
+    L2C -.->|"packaged as"| OL2
+    POL -.->|"packaged as"| OL3
+
+    subgraph complyctl ["complyctl Workflow"]
+        direction TB
+        REG["OCI Registry<br/><i>e.g. quay.io</i>"]
+        GET["complyctl get<br/>Pull and cache policy bundle"]
+        CACHE["Local OCI Layout Cache<br/><i>~/.complytime/policies/</i>"]
+        RESOLVE["complyctl generate<br/>Resolve dependency graph"]
+        SCAN["complyctl scan<br/>Execute assessments via providers"]
+        EVAL["EvaluationLog<br/><i>Layer 5 output</i><br/>Per-control results with<br/>confidence levels"]
+    end
+
+    OL3 -.->|"pushed to"| REG
+    OL2 -.->|"pushed to"| REG
+    OL1 -.->|"pushed to"| REG
+    REG -->|"oras.Copy"| GET
+    GET -->|"stores"| CACHE
+    CACHE -->|"loads layers"| RESOLVE
+    RESOLVE -->|"assessment configs"| SCAN
+    SCAN -->|"produces"| EVAL
+
+    %% -- Theme: purple for Gemara, green for OCI, orange for complyctl --
+    classDef purple fill:#ede9fe,stroke:#7c3aed,color:#3b0764
+    classDef green fill:#d1fae5,stroke:#059669,color:#064e3b
+    classDef orange fill:#ffedd5,stroke:#ea580c,color:#7c2d12
+
+    class L1,L2T,L2C,L3,POL purple
+    class M,CFG,OL1,OL2,OL3 green
+    class REG,GET,CACHE,RESOLVE,SCAN,EVAL orange
+
+    style gemara fill:#f5f3ff,stroke:#7c3aed,stroke-width:2px,color:#3b0764
+    style oci fill:#ecfdf5,stroke:#059669,stroke-width:2px,color:#064e3b
+    style complyctl fill:#fff7ed,stroke:#ea580c,stroke-width:2px,color:#7c2d12
+```
+
+> **Reading the diagram:** Gemara separates compliance into layers that form a mesh -- Guidance (Layer 1) decomposes into Controls and informs Threats (Layer 2), which drive Risk (Layer 3). A Policy imports from all three layers and defines what to assess. These artifacts are packaged as OCI layers in a bundle, pushed to a registry, and pulled by `complyctl` for automated compliance scanning.
+
 #### Layer 1 — Guidance
 
 **Gemara Guidance Catalog** — high-level guidance that would come from a regulator, standards body, or unique organization-specific use-cases of best practices.
